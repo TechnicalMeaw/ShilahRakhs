@@ -1,4 +1,5 @@
-/*package com.coprotect.myapplication
+package com.coprotect.myapplication
+
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -93,37 +94,4 @@ class ProfileFragment : Fragment() {
             }
     }
 
-}*/
-
-package com.coprotect.myapplication
-
-import android.content.Intent
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-
-
-class ProfileFragment : Fragment() {
-
-    lateinit var fab : FloatingActionButton
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val view: View = inflater.inflate(R.layout.fragmnt_profile, container, false)
-
-        fab = view.findViewById(R.id.fab)
-
-        fab.setOnClickListener {
-            val i = Intent(context,AddPostActivity::class.java)
-            startActivity(i)
-        }
-
-        return view
-    }
 }
