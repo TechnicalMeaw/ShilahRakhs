@@ -6,7 +6,7 @@ class PostItem(val userId: String,
                val postMediaUrl: String,
                val postCaption: String,
                val likeCount: Long,
-               val commentCount: String,
+               val commentCount: Long,
                val postTimeInMillis: Long) {
-    constructor(): this("", "", "", "", "", -1, "", -1)
+    constructor(): this("", "", "", "", "", -1, 0, -1)
 }

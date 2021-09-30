@@ -7,10 +7,15 @@ import java.util.*
 class StorageLocations {
     companion object{
         private const val profileImageLocation = "/dp"
+        private const val postLocation = "/Posts"
 
-        fun getUserDpReference(userId: String): StorageReference {
+        fun getUserDpStorageReference(userId: String): StorageReference {
             val filename = UUID.randomUUID().toString()
             return FirebaseStorage.getInstance().getReference(profileImageLocation).child(userId).child(filename)
+        }
+
+        fun getPostStorageReference(): StorageReference {
+            return FirebaseStorage.getInstance().getReference(postLocation)
         }
     }
 }

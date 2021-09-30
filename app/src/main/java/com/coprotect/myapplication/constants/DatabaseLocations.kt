@@ -8,6 +8,7 @@ class DatabaseLocations {
         private const val userLocation = "/user"
         private const val PostLocation = "/allPost"
         private const val userPostLocation = "/userPost"
+        private const val likeLocation = "likes"
         private const val commentLocation = "/comments"
         private const val followingLocation = "/following"
         private const val followersLocation = "/followers"
@@ -23,6 +24,9 @@ class DatabaseLocations {
         }
         fun getUserPostReference(userId: String): DatabaseReference{
             return FirebaseDatabase.getInstance().getReference("$userPostLocation/$userId/")
+        }
+        fun getPostLikeReference(postId: String): DatabaseReference{
+            return FirebaseDatabase.getInstance().getReference("$likeLocation/$postId/")
         }
         fun getCommentReference(postId: String): DatabaseReference {
             return FirebaseDatabase.getInstance().getReference("$commentLocation/$postId/")

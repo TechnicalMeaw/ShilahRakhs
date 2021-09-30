@@ -6,6 +6,8 @@ import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.coprotect.myapplication.constants.IntentStrings.Companion.CAMERA_REQUEST_CODE
+import com.coprotect.myapplication.constants.IntentStrings.Companion.STORAGE_REQUEST_CODE
 
 class CheckingPermission(var context: Context) {
 
@@ -20,7 +22,6 @@ class CheckingPermission(var context: Context) {
 
     fun requestCameraPermission() {
         val cameraPermission: Array<String> = arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        val CAMERA_REQUEST_CODE = 100
         ActivityCompat.requestPermissions(context as Activity, cameraPermission, CAMERA_REQUEST_CODE)
     }
 
@@ -32,7 +33,6 @@ class CheckingPermission(var context: Context) {
 
     fun requestStoragePermission() {
         val storagePermission: Array<String> = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        val STORAGE_REQUEST_CODE = 200
         ActivityCompat.requestPermissions(context as Activity, storagePermission, STORAGE_REQUEST_CODE)
     }
 }

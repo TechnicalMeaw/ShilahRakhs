@@ -12,14 +12,11 @@ import androidx.core.graphics.drawable.toBitmap
 import com.bumptech.glide.Glide
 import com.coprotect.myapplication.constants.DatabaseLocations.Companion.getUserReference
 import com.coprotect.myapplication.constants.IntentStrings
-import com.coprotect.myapplication.constants.StorageLocations.Companion.getUserDpReference
+import com.coprotect.myapplication.constants.StorageLocations.Companion.getUserDpStorageReference
 import com.coprotect.myapplication.databinding.ActivityRegisterUserBinding
 import com.coprotect.myapplication.firebaseClasses.UserItem
-import com.coprotect.myapplication.imageOperations.ImageResizer
+import com.coprotect.myapplication.imageOperations.ImageConversion.Companion.bitmapToByteArray
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
-import java.io.ByteArrayOutputStream
-import java.util.*
 
 class RegisterUserActivity : AppCompatActivity() {
 
@@ -79,8 +76,8 @@ class RegisterUserActivity : AppCompatActivity() {
     }
 
     private fun uploadImageToFirebaseAndRegisterUser(bitmap: Bitmap?){
-        val ref = getUserDpReference(FirebaseAuth.getInstance().uid.toString())
-        ref.putBytes(bitmapToByteArray(bitmap!!)).addOnSuccessListener {
+        val ref = getUserDpStorageReference(FirebaseAuth.getInstance().uid.toString())
+        ref.putBytes(bitmapToByteArray(bitmap!!, 250000)).addOnSuccessListener {
             ref.downloadUrl.addOnSuccessListener {
                 val dpUrl = it.toString()
                 registerUserToDatabase(firstName, lastName, phoneNumber, countryName, dpUrl, "")
@@ -88,14 +85,6 @@ class RegisterUserActivity : AppCompatActivity() {
         }.removeOnFailureListener {
             Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show()
         }
-    }
-
-    private fun bitmapToByteArray(bitmap: Bitmap): ByteArray {
-        val newBitmap = ImageResizer.generateThumb(bitmap, 250000)
-        val stream = ByteArrayOutputStream()
-        newBitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
-
-        return stream.toByteArray()
     }
 
 

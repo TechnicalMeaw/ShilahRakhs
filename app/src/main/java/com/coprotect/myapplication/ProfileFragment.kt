@@ -55,23 +55,23 @@ class ProfileFragment : Fragment() {
         rView.layoutManager = GridLayoutManager(rootView.context, 3)
 
         val ref = DatabaseLocations.getUserReference(FirebaseAuth.getInstance().uid.toString())
-        ref.addListenerForSingleValueEvent(object: ValueEventListener {
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.value != null){
+                if (snapshot.value != null) {
                     val item = snapshot.getValue(UserItem::class.java)
                     Glide.with(this@ProfileFragment).load(item?.profilePictureUrl).into(userDp)
                     userName.text = "${item?.firstName} ${item?.lastName}"
                 }
             }
+
             override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
-                }
+                TODO("Not yet implemented")
+            }
         })
 
 
         return rootView
     }
-
 
 
     companion object {
@@ -93,3 +93,4 @@ class ProfileFragment : Fragment() {
                 }
             }
     }
+}

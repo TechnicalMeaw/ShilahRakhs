@@ -5,6 +5,7 @@ import com.coprotect.myapplication.constants.DatabaseLocations.Companion.getAllP
 import com.coprotect.myapplication.constants.DatabaseLocations.Companion.getUserPostReference
 import com.coprotect.myapplication.constants.StorageLocations.Companion.getPostStorageReference
 import com.coprotect.myapplication.firebaseClasses.PostItem
+import com.coprotect.myapplication.firebaseClasses.UserPostItem
 import com.coprotect.myapplication.imageOperations.ImageConversion.Companion.bitmapToByteArray
 import com.google.firebase.auth.FirebaseAuth
 import java.util.*
@@ -16,7 +17,9 @@ class UploadPost {
             val ref = getPostStorageReference().child(filename)
 
             ref.putBytes(bitmapToByteArray(bitmap, 500000)).addOnSuccessListener {
-                updatePostToDatabase(FirebaseAuth.getInstance().uid.toString(), filename, ref.downloadUrl.toString(), caption)
+                ref.downloadUrl.addOnSuccessListener{
+                    updatePostToDatabase(FirebaseAuth.getInstance().uid.toString(), filename, it.toString(), caption)
+                }
             }
         }
 
@@ -30,6 +33,7 @@ class UploadPost {
         }
 
         private fun updatePostToUserProfile(postId: String, postItem: PostItem){
+            val item = UserPostItem(postId, "Image", postItem.postMediaUrl, postItem.postTimeInMillis)
             getUserPostReference(FirebaseAuth.getInstance().uid.toString()).child(postId).setValue(postItem)
         }
     }
