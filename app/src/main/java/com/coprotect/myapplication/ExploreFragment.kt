@@ -1,60 +1,147 @@
 package com.coprotect.myapplication
 
 import android.os.Bundle
+import android.os.Handler
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.coprotect.myapplication.R
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+import com.coprotect.myapplication.constants.DatabaseLocations
+import com.coprotect.myapplication.constants.IntentStrings
+import com.coprotect.myapplication.databinding.FragmentExploreBinding
+import com.coprotect.myapplication.databinding.FragmentHomeBinding
+import com.coprotect.myapplication.firebaseClasses.PostItem
+import com.coprotect.myapplication.postTransactions.PostTasks
+import com.coprotect.myapplication.recyclerViewAdapters.PostListener
+import com.coprotect.myapplication.recyclerViewAdapters.PostRVAdapter
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.ChildEventListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 
 /**
  * A simple [Fragment] subclass.
  * Use the [ExploreFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class ExploreFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+class ExploreFragment : Fragment(), PostListener {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var binding: FragmentExploreBinding
+    private lateinit var adapter: PostRVAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_explore, container, false)
+        binding = FragmentExploreBinding.inflate(inflater, container, false)
+        val rootView = binding.root
+
+        /**
+         * Initialize RecyclerView Adapter
+         */
+        adapter = PostRVAdapter(this.requireContext(), this)
+        binding.exploreRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.exploreRecyclerView.adapter = this.adapter
+
+        /**
+         * Fetch All Posts
+         */
+        Thread{
+            fetchAllPosts()
+        }.start()
+
+        return rootView
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ExploreFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ExploreFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    val postMap: HashMap<String, PostItem> = HashMap()
+    private fun fetchAllPosts(){
+        DatabaseLocations.getAllPostReference().addChildEventListener(object: ChildEventListener {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                if (snapshot.exists()){
+                    val post = snapshot.getValue(PostItem::class.java)
+                    if (post!= null && post.userId != FirebaseAuth.getInstance().uid.toString()){
+                        postMap[snapshot.key.toString()] = post
+                        adapter.updatePosts(postMap.values.sortedBy { it.postTimeInMillis }.reversed().toList())
+                    }
                 }
             }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                if (snapshot.exists()){
+                    val post = snapshot.getValue(PostItem::class.java)
+                    if (post!= null){
+                        if (postMap.containsKey(snapshot.key.toString())){
+                            postMap[snapshot.key.toString()] = post
+                            adapter.updatePosts(postMap.values.sortedBy { it.postTimeInMillis }.reversed().toList())
+                        }
+                    }
+                }
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                if (postMap.containsKey(snapshot.key.toString())){
+                    postMap.remove(snapshot.key.toString())
+                    adapter.updatePosts(postMap.values.sortedBy { it.postTimeInMillis }.reversed().toList())
+                }
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
     }
+
+    override fun onLikeButtonClicked(currentPost: PostItem) {
+        val ref = DatabaseLocations.getPostLikeReference(currentPost.postId)
+        Thread{
+            ref.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()){
+                        if (snapshot.hasChild(FirebaseAuth.getInstance().uid.toString())){
+                            snapshot.child(FirebaseAuth.getInstance().uid.toString()).ref.removeValue()
+                            PostTasks.removeLike(currentPost.postId)
+                        }else{
+                            ref.child(FirebaseAuth.getInstance().uid.toString()).setValue(System.currentTimeMillis())
+                            PostTasks.addLike(currentPost.postId)
+                        }
+                    }else{
+                        ref.child(FirebaseAuth.getInstance().uid.toString()).setValue(System.currentTimeMillis())
+                        PostTasks.addLike(currentPost.postId)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+
+            })
+        }.start()
+    }
+
+    override fun onCommentButtonClicked(currentPost: PostItem) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onClickedProfile(currentPost: PostItem) {
+        val profileFragment = ProfileFragment()
+        val args = Bundle()
+        args.putString(IntentStrings.userId, currentPost.userId)
+        profileFragment.arguments = args
+
+        parentFragmentManager.beginTransaction()
+            .setReorderingAllowed(true)
+            .addToBackStack("userProfile")
+            .replace(R.id.fragmentContainerView, profileFragment)
+            .commit()
+    }
+
 }

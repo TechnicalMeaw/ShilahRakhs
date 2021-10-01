@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import com.coprotect.myapplication.constants.DatabaseLocations.Companion.getAllPostReference
+import com.coprotect.myapplication.constants.DatabaseLocations.Companion.getFollowingReference
 import com.coprotect.myapplication.constants.DatabaseLocations.Companion.getPostLikeReference
 import com.coprotect.myapplication.constants.IntentStrings
 import com.coprotect.myapplication.databinding.FragmentHomeBinding
@@ -108,8 +109,7 @@ class HomeFragment : Fragment(), PostListener {
                                 adapter.updatePosts(postMap.values.sortedBy { it.postTimeInMillis }.reversed().toList())
                             }
                         } else{
-                            postMap[snapshot.key.toString()] = post
-                            adapter.updatePosts(postMap.values.sortedBy { it.postTimeInMillis }.reversed().toList())
+                            checkFollowing(snapshot.key.toString(), post)
                         }
 
                         /**
@@ -130,7 +130,7 @@ class HomeFragment : Fragment(), PostListener {
                 if (snapshot.exists()){
                     val post = snapshot.getValue(PostItem::class.java)
                     if (post!= null){
-                        if (postMap.containsKey(snapshot.key)){
+                        if (postMap.containsKey(snapshot.key.toString())){
                             postMap[snapshot.key.toString()] = post
                             adapter.updatePosts(postMap.values.sortedBy { it.postTimeInMillis }.reversed().toList())
                         }
@@ -139,14 +139,30 @@ class HomeFragment : Fragment(), PostListener {
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
-                if (postMap.containsKey(snapshot.key)){
-                    postMap.remove(snapshot.key)
+                if (postMap.containsKey(snapshot.key.toString())){
+                    postMap.remove(snapshot.key.toString())
                     adapter.updatePosts(postMap.values.sortedBy { it.postTimeInMillis }.reversed().toList())
                 }
             }
 
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
                 TODO("Not yet implemented")
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
+    }
+
+    private fun checkFollowing(postKey: String, post: PostItem) {
+        getFollowingReference(FirebaseAuth.getInstance().uid.toString()).child(post.userId).addListenerForSingleValueEvent(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()){
+                    postMap[postKey] = post
+                    adapter.updatePosts(postMap.values.sortedBy { it.postTimeInMillis }.reversed().toList())
+                }
             }
 
             override fun onCancelled(error: DatabaseError) {
