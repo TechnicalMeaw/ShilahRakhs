@@ -48,6 +48,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/followersCountTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="1M"
@@ -70,6 +71,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/followingCountTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="100"
@@ -88,7 +90,7 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/followButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
@@ -100,14 +102,14 @@
         android:elevation="5dp"/>
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/activityLabel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
         android:text="Activity"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@+id/button"
+        app:layout_constraintTop_toBottomOf="@+id/followButton"
         tools:layout_editor_absoluteX="20dp" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -116,7 +118,7 @@
         android:layout_height="0dp"
         android:layout_margin="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintTop_toBottomOf="@+id/activityLabel"
         tools:layout_editor_absoluteX="20dp"
         tools:listitem="@layout/activity_item"
         android:elevation="5dp"

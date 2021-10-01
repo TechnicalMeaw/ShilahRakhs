@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +13,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.drawable.toBitmap
+import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.coprotect.myapplication.uploadTasks.UploadPost.Companion.uploadPostImage
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -49,6 +49,7 @@ class NewPostFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_new_post, container, false)
         val postBtn = rootView.findViewById<FloatingActionButton>(R.id.sendPostBtn)
@@ -63,10 +64,16 @@ class NewPostFragment : Fragment() {
 
         postBtn.setOnClickListener {
             if (imageBitmap != null){
-                uploadPostImage(imageBitmap!!, captionEditText.text.toString())
-                    .also {
-                        Toast.makeText(this.requireContext(), "Uploading...", Toast.LENGTH_SHORT).show()
-                        parentFragmentManager.popBackStack() }
+                try {
+                    Thread{
+                        uploadPostImage(imageBitmap!!, captionEditText.text.toString())
+                    }.start()
+
+                    Toast.makeText(this.requireContext(), "Uploading...", Toast.LENGTH_SHORT).show()
+                    parentFragmentManager.popBackStack()
+                }catch (e: Exception){
+                    Toast.makeText(this.requireContext(), "Failed to upload", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 

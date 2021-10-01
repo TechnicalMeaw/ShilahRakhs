@@ -1,66 +1,121 @@
 package com.coprotect.myapplication
 
-import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.coprotect.myapplication.R
+import com.bumptech.glide.request.RequestOptions
 import com.coprotect.myapplication.constants.DatabaseLocations
+import com.coprotect.myapplication.constants.DatabaseLocations.Companion.getFollowingReference
+import com.coprotect.myapplication.constants.DatabaseLocations.Companion.getUserPostReference
+import com.coprotect.myapplication.constants.IntentStrings
+import com.coprotect.myapplication.databinding.FragmentProfileBinding
 import com.coprotect.myapplication.firebaseClasses.UserItem
+import com.coprotect.myapplication.firebaseClasses.UserPostItem
+import com.coprotect.myapplication.followOperations.FollowTasks.Companion.addFollowing
+import com.coprotect.myapplication.recyclerViewAdapters.ActivityPostListener
+import com.coprotect.myapplication.recyclerViewAdapters.ActivityPostRVAdapter
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import de.hdodenhof.circleimageview.CircleImageView
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
  * Use the [ProfileFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class ProfileFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+class ProfileFragment : Fragment(), ActivityPostListener {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var binding : FragmentProfileBinding
+    private lateinit var adapter: ActivityPostRVAdapter
+    private lateinit var profileUserId: String
+    var user: UserItem? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        val rootView = inflater.inflate(R.layout.fragment_profile, container, false)
-        val userName = rootView.findViewById<TextView>(R.id.userProfileName)
-        val userDp = rootView.findViewById<CircleImageView>(R.id.userDpCircleImageView)
-        val rView = rootView.findViewById<RecyclerView>(R.id.activityRecyclerView)
-        rView.layoutManager = GridLayoutManager(rootView.context, 3)
+    ): View {
 
-        val ref = DatabaseLocations.getUserReference(FirebaseAuth.getInstance().uid.toString())
-        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+        // Inflate the layout for this fragment
+        binding = FragmentProfileBinding.inflate(inflater, container, false)
+        val rootView = binding.root
+
+        //Retrieve the value
+        try{
+            profileUserId = requireArguments().getString(IntentStrings.userId).toString()
+        }catch (e: Exception){
+            profileUserId = FirebaseAuth.getInstance().uid.toString()
+            binding.followButton.text = "Edit Profile"
+        }
+
+        /**
+         * Initialize the recyclerView
+         * With adapter
+         */
+        binding.activityRecyclerView.layoutManager = GridLayoutManager(rootView.context, 3)
+        adapter = ActivityPostRVAdapter(this.requireContext(), this)
+        binding.activityRecyclerView.adapter = this.adapter
+
+        /**
+         * Fetch User Details
+         * And Activities
+         * From Database
+         */
+        Thread{
+            fetchUserDetails(profileUserId)
+            fetchUserActivities(profileUserId)
+            if (profileUserId != FirebaseAuth.getInstance().uid.toString()){
+                checkFollowing(FirebaseAuth.getInstance().uid.toString(), profileUserId)
+            }
+        }.start()
+
+        /**
+         * Following Button Clicked
+         */
+        binding.followButton.setOnClickListener {
+            if (profileUserId != FirebaseAuth.getInstance().uid.toString()){
+                if (user != null){
+                    addFollowing(FirebaseAuth.getInstance().uid.toString(), user!!)
+                }
+            }
+        }
+
+        return rootView
+    }
+
+
+    private val activityPostMap = HashMap<String, UserPostItem>()
+
+    private fun fetchUserDetails(userId: String){
+        // Image Loading Config
+        val options: RequestOptions = RequestOptions()
+            .centerCrop()
+            .placeholder(R.drawable.ic_person)
+            .error(R.drawable.ic_person)
+
+        // Fetch Details
+        val ref = DatabaseLocations.getUserReference(userId)
+        ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.value != null) {
-                    val item = snapshot.getValue(UserItem::class.java)
-                    Glide.with(this@ProfileFragment).load(item?.profilePictureUrl).into(userDp)
-                    userName.text = "${item?.firstName} ${item?.lastName}"
+                try {
+                    if (snapshot.value != null) {
+                        user = snapshot.getValue(UserItem::class.java)
+                        if (user != null){
+                            Glide.with(requireContext()).load(user!!.profilePictureUrl).apply(options).into(binding.userDpCircleImageView)
+                            binding.userProfileName.text = "${user!!.firstName} ${user!!.lastName}"
+                            binding.followersCountTextView.text = user!!.followers.toString()
+                            binding.followingCountTextView.text = user!!.following.toString()
+                            profileUserId = user!!.userId
+                        }
+
+                    }
+                }catch (e: Exception){
+                    e.stackTrace
                 }
             }
 
@@ -68,29 +123,82 @@ class ProfileFragment : Fragment() {
                 TODO("Not yet implemented")
             }
         })
-
-
-        return rootView
     }
 
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ProfileFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ProfileFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    private fun fetchUserActivities(userId: String){
+        getUserPostReference(userId).addChildEventListener(object: ChildEventListener{
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                if (snapshot.exists()){
+                    val activityPost = snapshot.getValue(UserPostItem::class.java)
+                    if (activityPost != null){
+                        activityPostMap[snapshot.key.toString()] = activityPost
+                        adapter.updateActivityPosts(activityPostMap.values.sortedBy { it.modifiedInMillis }.toList())
+                    }
                 }
             }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                if (snapshot.exists()){
+                    val activityPost = snapshot.getValue(UserPostItem::class.java)
+                    if (activityPost != null){
+                        activityPostMap[snapshot.key.toString()] = activityPost
+                        adapter.updateActivityPosts(activityPostMap.values.sortedBy { it.modifiedInMillis }.toList())
+                    }
+                }
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                activityPostMap.remove(snapshot.key.toString())
+                adapter.updateActivityPosts(activityPostMap.values.sortedBy { it.modifiedInMillis }.toList())
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
     }
+
+    private fun checkFollowing(myUserId: String, profileUserId: String) {
+        getFollowingReference(myUserId).addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()){
+                    if (snapshot.hasChild(profileUserId)){
+                        binding.followButton.text = "Following"
+                    }else{
+                        binding.followButton.text = "Follow"
+                    }
+                }else{
+                    binding.followButton.text = "Follow"
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
+    }
+
+
+
+    override fun onClickedActivityPost(activityPost: UserPostItem, position: Int) {
+        //Put the value
+        val homeFragment = HomeFragment()
+        val args = Bundle()
+        args.putString(IntentStrings.userId, profileUserId)
+        args.putInt(IntentStrings.postPosition, position)
+        homeFragment.arguments = args
+
+        parentFragmentManager.beginTransaction()
+            .setReorderingAllowed(true)
+            .addToBackStack("PostImages")
+            .replace(R.id.fragmentContainerView, homeFragment)
+            .commit()
+    }
+
 }
