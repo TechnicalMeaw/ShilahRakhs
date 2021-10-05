@@ -138,7 +138,7 @@ class FollowTasks {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()){
                         val followingCount = snapshot.child("followers").value as Long
-                        snapshot.child("followers").ref.setValue(followingCount+1)
+                        snapshot.child("followers").ref.setValue(followingCount-1)
                     }
                 }
 

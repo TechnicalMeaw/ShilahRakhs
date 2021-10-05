@@ -144,4 +144,8 @@ class ExploreFragment : Fragment(), PostListener {
             .commit()
     }
 
+    override fun onShareButtonClicked(currentPost: PostItem) {
+        TODO("Not yet implemented")
+    }
+
 }

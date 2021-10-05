@@ -13,7 +13,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/bottom_nav_menu"/>
+        app:menu="@menu/bottom_nav_menu"
+        app:layout_behavior="@string/hide_bottom_view_on_scroll_behavior"/>
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainerView"
@@ -25,6 +26,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:navGraph="@navigation/my_nav" />
+        app:navGraph="@navigation/my_nav"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

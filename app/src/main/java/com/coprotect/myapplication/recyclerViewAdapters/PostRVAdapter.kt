@@ -20,6 +20,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
+import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 
 class PostRVAdapter(private val context: Context, private val listener: PostListener): RecyclerView.Adapter<PostRVAdapter.PostViewHolder>() {
@@ -52,6 +53,8 @@ class PostRVAdapter(private val context: Context, private val listener: PostList
 
         viewHolder.name.setOnClickListener { listener.onClickedProfile(allPosts[viewHolder.bindingAdapterPosition]) }
 
+        viewHolder.shareBtn.setOnClickListener { listener.onShareButtonClicked(allPosts[viewHolder.bindingAdapterPosition]) }
+
         return viewHolder
     }
 
@@ -64,7 +67,13 @@ class PostRVAdapter(private val context: Context, private val listener: PostList
 
         try {
             // Load Post Image
-            Glide.with(context).load(currentPost.postMediaUrl).centerCrop().into(holder.postImage)
+//            Glide.with(context).load(currentPost.postMediaUrl).into(holder.postImage)
+            /**
+             * Used Picasso instead of Glide
+             * as having issues with
+             * imageMaxHeight
+             */
+            Picasso.get().load(currentPost.postMediaUrl).into(holder.postImage)
 
             /**
              * Fetch User DP
@@ -149,4 +158,5 @@ interface PostListener{
     fun onLikeButtonClicked(currentPost: PostItem)
     fun onCommentButtonClicked(currentPost: PostItem)
     fun onClickedProfile(currentPost: PostItem)
+    fun onShareButtonClicked(currentPost: PostItem)
 }

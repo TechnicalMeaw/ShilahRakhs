@@ -1,15 +1,23 @@
 package com.coprotect.myapplication
 
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.coprotect.myapplication.constants.DatabaseLocations.Companion.getAllPostReference
 import com.coprotect.myapplication.constants.DatabaseLocations.Companion.getFollowingReference
 import com.coprotect.myapplication.constants.DatabaseLocations.Companion.getPostLikeReference
@@ -25,6 +33,9 @@ import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
 
 /**
@@ -202,7 +213,17 @@ class HomeFragment : Fragment(), PostListener {
     }
 
     override fun onCommentButtonClicked(currentPost: PostItem) {
-        TODO("Not yet implemented")
+        val commentFragment = CommentsFragment()
+        val args = Bundle()
+        args.putString(IntentStrings.userId, FirebaseAuth.getInstance().uid.toString())
+        args.putString(IntentStrings.postId, currentPost.postId)
+        commentFragment.arguments = args
+
+        parentFragmentManager.beginTransaction()
+            .setReorderingAllowed(true)
+            .addToBackStack("comments")
+            .replace(R.id.fragmentContainerView, commentFragment)
+            .commit()
     }
 
     override fun onClickedProfile(currentPost: PostItem) {
@@ -216,6 +237,54 @@ class HomeFragment : Fragment(), PostListener {
             .addToBackStack("userProfile")
             .replace(R.id.fragmentContainerView, profileFragment)
             .commit()
+    }
+
+    override fun onShareButtonClicked(currentPost: PostItem) {
+        Glide.with(this)
+            .asBitmap()
+            .load(currentPost.postMediaUrl)
+            .into(object : CustomTarget<Bitmap>() {
+                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                    shareImage(resource)
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) {
+                    // this is called when imageView is cleared on lifecycle call or for
+                    // some other reason.
+                    // if you are referencing the bitmap somewhere else too other than this imageView
+                    // clear it here as you can no longer have the bitmap
+                }
+            })
+
+    }
+
+    fun shareImage(bitmap: Bitmap){
+                // save bitmap to cache directory
+        try {
+            val cachePath: File = File(this.requireContext().cacheDir, "images")
+            cachePath.mkdirs() // don't forget to make the directory
+            val stream =
+                FileOutputStream("$cachePath/image.png") // overwrites this image every time
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            stream.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+
+        val imagePath: File = File(this.requireContext().cacheDir, "images")
+        val newFile = File(imagePath, "image.png")
+        val contentUri: Uri =
+            FileProvider.getUriForFile(this.requireContext(), "com.coprotect.myapplication.fileprovider", newFile)
+
+        val shareIntent = Intent()
+        shareIntent.action = Intent.ACTION_SEND
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION) // temp permission for receiving app to read this file
+        shareIntent.setDataAndType(contentUri, requireContext().contentResolver.getType(contentUri))
+        shareIntent.putExtra(Intent.EXTRA_STREAM, contentUri)
+
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "Hey check out this awesome image I found on Shilah Raksh app")
+
+        startActivity(Intent.createChooser(shareIntent, "Share image via..."))
     }
 
 }

@@ -38,5 +38,37 @@ class PostTasks {
 
             })
         }
+
+        fun addCommentCount(postId: String) {
+            getSpecificPostReference(postId).addListenerForSingleValueEvent(object: ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()){
+                        val comment = snapshot.child("commentCount").value as Long
+                        snapshot.child("commentCount").ref.setValue(comment+1)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+
+            })
+        }
+
+        fun removeCommentCount(postId: String) {
+            getSpecificPostReference(postId).addListenerForSingleValueEvent(object: ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()){
+                        val comment = snapshot.child("commentCount").value as Long
+                        snapshot.child("commentCount").ref.setValue(comment-1)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+
+            })
+        }
     }
 }
