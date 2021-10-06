@@ -10,6 +10,18 @@ class UserItem(val firstName: String,
                val bio: String,
                val createdAccountTime: Long,
                val following: Long,
-               val followers: Long) {
-    constructor() : this("", "", "", "", "", "", "", "", -1, 0, 0)
+               val followers: Long,
+               val email: String,
+               val website: String) {
+    constructor() : this(
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        -1,
+        0, 0, "", "")
 }

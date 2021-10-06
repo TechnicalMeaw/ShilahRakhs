@@ -17,5 +17,9 @@ class StorageLocations {
         fun getPostStorageReference(): StorageReference {
             return FirebaseStorage.getInstance().getReference(postLocation)
         }
+
+        fun getStorageReferenceByUrl(url: String): StorageReference {
+            return FirebaseStorage.getInstance().getReferenceFromUrl(url)
+        }
     }
 }

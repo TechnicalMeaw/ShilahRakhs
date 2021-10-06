@@ -78,9 +78,15 @@ class ProfileFragment : Fragment(), ActivityPostListener {
          * Following Button Clicked
          */
         binding.followButton.setOnClickListener {
-            if (profileUserId != FirebaseAuth.getInstance().uid.toString()){
-                if (user != null){
+            if (user != null){
+                if (profileUserId != FirebaseAuth.getInstance().uid.toString()){
                     addFollowing(FirebaseAuth.getInstance().uid.toString(), user!!)
+                }else{
+                    parentFragmentManager.beginTransaction()
+                        .setReorderingAllowed(true)
+                        .addToBackStack("EditProfile")
+                        .replace(R.id.fragmentContainerView, EditProfileFragment())
+                        .commit()
                 }
             }
         }
@@ -110,6 +116,12 @@ class ProfileFragment : Fragment(), ActivityPostListener {
                             binding.userProfileName.text = "${user!!.firstName} ${user!!.lastName}"
                             binding.followersCountTextView.text = user!!.followers.toString()
                             binding.followingCountTextView.text = user!!.following.toString()
+                            if (user!!.bio != "" || user!!.website != ""){
+                                binding.bioTextView.visibility = View.VISIBLE
+                                binding.bioTextView.text = "${user!!.bio}\n\nWebsite: ${user!!.website}"
+                            }else{
+                                binding.bioTextView.visibility = View.GONE
+                            }
                             profileUserId = user!!.userId
                         }
 

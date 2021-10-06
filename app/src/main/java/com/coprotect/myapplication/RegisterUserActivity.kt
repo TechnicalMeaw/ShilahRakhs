@@ -33,8 +33,8 @@ class RegisterUserActivity : AppCompatActivity() {
         binding = ActivityRegisterUserBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        phoneNumber = intent.getStringExtra(IntentStrings.phoneNumber).toString()
-        countryName = intent.getStringExtra(IntentStrings.countryName).toString()
+        phoneNumber = intent.getStringExtra(IntentStrings.phoneNumber).toString().trim()
+        countryName = intent.getStringExtra(IntentStrings.countryName).toString().trim()
 
         binding.photoSelector.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK)
@@ -43,8 +43,8 @@ class RegisterUserActivity : AppCompatActivity() {
         }
 
         binding.createAccountBtn.setOnClickListener {
-            firstName = binding.loginFirstNameEditText.text.toString()
-            lastName = binding.loginLastNameEditText.text.toString()
+            firstName = binding.loginFirstNameEditText.text.toString().trim()
+            lastName = binding.loginLastNameEditText.text.toString().trim()
 
             if ( firstName!= "" &&  lastName!= ""){
 
@@ -89,7 +89,7 @@ class RegisterUserActivity : AppCompatActivity() {
 
 
     private fun registerUserToDatabase(firstName: String, lastName: String, phoneNumber: String, countryName: String, dpUrl: String, notificationToken: String){
-        val user = UserItem(firstName, lastName, FirebaseAuth.getInstance().uid.toString(), phoneNumber, countryName, dpUrl, notificationToken, "", System.currentTimeMillis(), 0, 0)
+        val user = UserItem(firstName, lastName, FirebaseAuth.getInstance().uid.toString(), phoneNumber, countryName, dpUrl, notificationToken, "", System.currentTimeMillis(), 0, 0, "", "")
         val ref = getUserReference(FirebaseAuth.getInstance().uid.toString())
         ref.setValue(user).addOnSuccessListener {
             redirectToMainActivity()

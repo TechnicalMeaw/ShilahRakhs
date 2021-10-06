@@ -14,6 +14,7 @@ import com.coprotect.myapplication.databinding.FragmentProfileBinding
 import com.coprotect.myapplication.firebaseClasses.CommentItem
 import com.coprotect.myapplication.postTransactions.PostTasks.Companion.addCommentCount
 import com.coprotect.myapplication.recyclerViewAdapters.CommentRVAdapter
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
@@ -44,6 +45,10 @@ class CommentsFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentCommentsBinding.inflate(inflater, container, false)
         val rootView = binding.root
+
+        // Hide Nav Bar
+        val navbar = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavBar)
+        navbar.visibility = View.GONE
 
         /**
          * Initialize the comments recyclerView Adapter
@@ -124,5 +129,13 @@ class CommentsFragment : Fragment() {
 
         })
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Show Nav Bar
+        val navbar = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavBar)
+        navbar.visibility = View.VISIBLE
+    }
+
 
 }

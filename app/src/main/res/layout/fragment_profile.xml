@@ -23,12 +23,24 @@
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
         android:text="Username"
-        android:textSize="22sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/userDpCircleImageView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/userDpCircleImageView"
         app:layout_constraintTop_toTopOf="@+id/userDpCircleImageView" />
+
+    <TextView
+        android:id="@+id/bioTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/userDpCircleImageView"
+        android:layout_margin="15dp"
+        android:autoLink="web"
+        android:linksClickable="true"
+        android:textColorLink="@color/design_default_color_secondary"
+        android:visibility="gone"
+         />
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -37,7 +49,7 @@
         android:layout_margin="15dp"
         android:orientation="horizontal"
         android:weightSum="2"
-        app:layout_constraintTop_toBottomOf="@+id/userDpCircleImageView"
+        app:layout_constraintTop_toBottomOf="@+id/bioTextView"
         tools:layout_editor_absoluteX="20dp">
 
         <LinearLayout
@@ -51,7 +63,7 @@
                 android:id="@+id/followersCountTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="1M"
+                android:text="0"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -74,7 +86,7 @@
                 android:id="@+id/followingCountTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="100"
+                android:text="0"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
