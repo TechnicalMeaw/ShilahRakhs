@@ -145,9 +145,15 @@ class ExploreFragment : Fragment(), PostListener {
         args.putString(IntentStrings.postId, currentPost.postId)
         commentFragment.arguments = args
 
-        parentFragmentManager.beginTransaction()
+//         parentFragmentManager.beginTransaction()
+//             .replace(R.id.fragmentContainerView, commentFragment)
+//             .addToBackStack("comments")
+//             .commit()
+        
+        val fragmentManager: FragmentManager = requireActivity().supportFragmentManager
+        fragmentManager.beginTransaction()
             .replace(R.id.fragmentContainerView, commentFragment)
-            .addToBackStack("comments")
+            .addToBackStack(null)
             .commit()
     }
 
@@ -157,9 +163,15 @@ class ExploreFragment : Fragment(), PostListener {
         args.putString(IntentStrings.userId, currentPost.userId)
         profileFragment.arguments = args
 
-        parentFragmentManager.beginTransaction()
+//         parentFragmentManager.beginTransaction()
+//             .replace(R.id.fragmentContainerView, profileFragment)
+//             .addToBackStack("userProfile")
+//             .commit()
+        
+        val fragmentManager: FragmentManager = requireActivity().supportFragmentManager
+        fragmentManager.beginTransaction()
             .replace(R.id.fragmentContainerView, profileFragment)
-            .addToBackStack("userProfile")
+            .addToBackStack(null)
             .commit()
     }
 
