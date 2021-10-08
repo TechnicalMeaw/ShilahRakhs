@@ -82,11 +82,17 @@ class ProfileFragment : Fragment(), ActivityPostListener {
                 if (profileUserId != FirebaseAuth.getInstance().uid.toString()){
                     addFollowing(FirebaseAuth.getInstance().uid.toString(), user!!)
                 }else{
-                    parentFragmentManager.beginTransaction()
-                        .setReorderingAllowed(true)
-                        .addToBackStack("EditProfile")
-                        .replace(R.id.fragmentContainerView, EditProfileFragment())
-                        .commit()
+//                     parentFragmentManager.beginTransaction()
+//                         .setReorderingAllowed(true)
+//                         .addToBackStack("EditProfile")
+//                         .replace(R.id.fragmentContainerView, EditProfileFragment())
+//                         .commit()
+                        
+                      val fragmentManager: FragmentManager = requireActivity().supportFragmentManager
+                      fragmentManager.beginTransaction()
+                          .replace(R.id.fragmentContainerView, editProfileFragment)
+                          .addToBackStack(null)
+                          .commit()
                 }
             }
         }
@@ -206,10 +212,16 @@ class ProfileFragment : Fragment(), ActivityPostListener {
         args.putInt(IntentStrings.postPosition, position)
         homeFragment.arguments = args
 
-        parentFragmentManager.beginTransaction()
-            .setReorderingAllowed(true)
-            .addToBackStack("PostImages")
+//         parentFragmentManager.beginTransaction()
+//             .setReorderingAllowed(true)
+//             .addToBackStack("PostImages")
+//             .replace(R.id.fragmentContainerView, homeFragment)
+//             .commit()
+        
+        val fragmentManager: FragmentManager = requireActivity().supportFragmentManager
+        fragmentManager.beginTransaction()
             .replace(R.id.fragmentContainerView, homeFragment)
+            .addToBackStack(null)
             .commit()
     }
 
