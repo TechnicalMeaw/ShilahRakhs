@@ -219,10 +219,16 @@ class HomeFragment : Fragment(), PostListener {
         args.putString(IntentStrings.postId, currentPost.postId)
         commentFragment.arguments = args
 
-        parentFragmentManager.beginTransaction()
-            .setReorderingAllowed(true)
-            .addToBackStack("comments")
+//         parentFragmentManager.beginTransaction()
+//             .setReorderingAllowed(true)
+//             .addToBackStack("comments")
+//             .replace(R.id.fragmentContainerView, commentFragment)
+//             .commit()
+        
+        val fragmentManager: FragmentManager = requireActivity().supportFragmentManager
+        fragmentManager.beginTransaction()
             .replace(R.id.fragmentContainerView, commentFragment)
+            .addToBackStack(null)
             .commit()
     }
 
@@ -232,10 +238,16 @@ class HomeFragment : Fragment(), PostListener {
         args.putString(IntentStrings.userId, currentPost.userId)
         profileFragment.arguments = args
 
-        parentFragmentManager.beginTransaction()
-            .setReorderingAllowed(true)
-            .addToBackStack("userProfile")
+//         parentFragmentManager.beginTransaction()
+//             .setReorderingAllowed(true)
+//             .addToBackStack("userProfile")
+//             .replace(R.id.fragmentContainerView, profileFragment)
+//             .commit()
+        
+        val fragmentManager: FragmentManager = requireActivity().supportFragmentManager
+        fragmentManager.beginTransaction()
             .replace(R.id.fragmentContainerView, profileFragment)
+            .addToBackStack(null)
             .commit()
     }
 
