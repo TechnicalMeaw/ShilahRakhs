@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="5dp"
-    app:cardElevation="3dp"
-    app:contentPadding="5dp"
-    app:cardUseCompatPadding="true"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
     >
 
     <LinearLayout
@@ -66,23 +64,32 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/postImageView"
+            <androidx.cardview.widget.CardView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                app:cardCornerRadius="2dp"
                 android:layout_marginTop="5dp"
 
-                android:adjustViewBounds="true"
-                android:cropToPadding="true"
-                android:maxHeight="550dp"
-                android:minHeight="300dp"
-
-                android:scaleType="centerCrop"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:srcCompat="@tools:sample/avatars" />
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/postImageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+
+                    android:adjustViewBounds="true"
+                    android:cropToPadding="true"
+                    android:maxHeight="550dp"
+                    android:minHeight="300dp"
+
+                    android:scaleType="centerCrop"
+                    tools:srcCompat="@tools:sample/avatars" />
+
+            </androidx.cardview.widget.CardView>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -176,4 +183,4 @@
 
     </LinearLayout>
 
-</androidx.cardview.widget.CardView>
+</RelativeLayout>

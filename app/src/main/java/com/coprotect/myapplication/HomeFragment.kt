@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
@@ -75,6 +76,9 @@ class HomeFragment : Fragment(), PostListener {
         adapter = PostRVAdapter(this.requireContext(), this)
         binding.homeRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.homeRecyclerView.adapter = this.adapter
+
+//        // Thin Line Between Posts
+//        binding.homeRecyclerView.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
 
         /**
          * Handle Clicks of
