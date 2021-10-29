@@ -13,5 +13,7 @@ class IntentStrings {
         const val userId = "USER_Id"
         const val postId = "POST_ID"
         const val postPosition = "POST_POSITION"
+
+        const val followType = "FOLLOW_TYPE"
     }
 }

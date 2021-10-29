@@ -91,6 +91,37 @@ class ProfileFragment : Fragment(), ActivityPostListener {
             }
         }
 
+        /**
+         * Followers and Following Users Count Clicked
+         */
+        binding.followingCountTextView.setOnClickListener {
+            val followListFragment = FollowListFragment()
+            val args = Bundle()
+            args.putString(IntentStrings.userId, profileUserId)
+            args.putString(IntentStrings.followType, "following")
+            followListFragment.arguments = args
+
+            parentFragmentManager.beginTransaction()
+                .setReorderingAllowed(true)
+                .addToBackStack("showFollowing")
+                .replace(R.id.fragmentContainerView, followListFragment)
+                .commit()
+        }
+
+        binding.followersCountTextView.setOnClickListener {
+            val followListFragment = FollowListFragment()
+            val args = Bundle()
+            args.putString(IntentStrings.userId, profileUserId)
+            args.putString(IntentStrings.followType, "followers")
+            followListFragment.arguments = args
+
+            parentFragmentManager.beginTransaction()
+                .setReorderingAllowed(true)
+                .addToBackStack("showFollowers")
+                .replace(R.id.fragmentContainerView, followListFragment)
+                .commit()
+        }
+
         return rootView
     }
 

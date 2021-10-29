@@ -12,6 +12,7 @@ import com.coprotect.myapplication.constants.IntentStrings
 import com.coprotect.myapplication.databinding.FragmentCommentsBinding
 import com.coprotect.myapplication.databinding.FragmentProfileBinding
 import com.coprotect.myapplication.firebaseClasses.CommentItem
+import com.coprotect.myapplication.listeners.CommentListener
 import com.coprotect.myapplication.postTransactions.PostTasks.Companion.addCommentCount
 import com.coprotect.myapplication.recyclerViewAdapters.CommentRVAdapter
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -27,7 +28,7 @@ import kotlin.collections.HashMap
  * Use the [CommentsFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class CommentsFragment : Fragment() {
+class CommentsFragment : Fragment(), CommentListener {
 
     private lateinit var binding : FragmentCommentsBinding
     private lateinit var adapter : CommentRVAdapter
@@ -53,7 +54,7 @@ class CommentsFragment : Fragment() {
         /**
          * Initialize the comments recyclerView Adapter
          */
-        adapter = CommentRVAdapter((this.requireContext()))
+        adapter = CommentRVAdapter((this.requireContext()), this)
         binding.commentsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.commentsRecyclerView.adapter = this.adapter
 
@@ -135,6 +136,20 @@ class CommentsFragment : Fragment() {
         // Show Nav Bar
         val navbar = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavBar)
         navbar.visibility = View.VISIBLE
+    }
+
+    // Comment Listener
+    override fun onUserClicked(currentComment: CommentItem) {
+        val profileFragment = ProfileFragment()
+        val args = Bundle()
+        args.putString(IntentStrings.userId, currentComment.userId)
+        profileFragment.arguments = args
+
+        parentFragmentManager.beginTransaction()
+            .setReorderingAllowed(true)
+            .addToBackStack("userProfile")
+            .replace(R.id.fragmentContainerView, profileFragment)
+            .commit()
     }
 
 

@@ -13,12 +13,13 @@ import com.coprotect.myapplication.constants.DatabaseLocations.Companion.getUser
 import com.coprotect.myapplication.conversion.TimeConversion.getDate
 import com.coprotect.myapplication.firebaseClasses.CommentItem
 import com.coprotect.myapplication.firebaseClasses.UserItem
+import com.coprotect.myapplication.listeners.CommentListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import de.hdodenhof.circleimageview.CircleImageView
 
-class CommentRVAdapter(private val context: Context) :
+class CommentRVAdapter(private val context: Context, private val listener: CommentListener) :
     RecyclerView.Adapter<CommentRVAdapter.CommentViewHolder>() {
 
     private val allComments = ArrayList<CommentItem>()
@@ -35,6 +36,11 @@ class CommentRVAdapter(private val context: Context) :
         viewType: Int
     ): CommentRVAdapter.CommentViewHolder {
         val viewHolder = CommentViewHolder(LayoutInflater.from(context).inflate(R.layout.row_comments, parent, false))
+
+        viewHolder.commenterDp.setOnClickListener { listener.onUserClicked(allComments[viewHolder.bindingAdapterPosition]) }
+
+        viewHolder.commenterName.setOnClickListener { listener.onUserClicked(allComments[viewHolder.bindingAdapterPosition]) }
+
         return viewHolder
     }
 

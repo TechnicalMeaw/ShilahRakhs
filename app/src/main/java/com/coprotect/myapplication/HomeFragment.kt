@@ -24,10 +24,12 @@ import com.coprotect.myapplication.constants.DatabaseLocations.Companion.getFoll
 import com.coprotect.myapplication.constants.DatabaseLocations.Companion.getPostLikeReference
 import com.coprotect.myapplication.constants.IntentStrings
 import com.coprotect.myapplication.databinding.FragmentHomeBinding
+import com.coprotect.myapplication.firebaseClasses.CommentItem
 import com.coprotect.myapplication.firebaseClasses.PostItem
+import com.coprotect.myapplication.listeners.CommentListener
+import com.coprotect.myapplication.listeners.PostListener
 import com.coprotect.myapplication.postTransactions.PostTasks.Companion.addLike
 import com.coprotect.myapplication.postTransactions.PostTasks.Companion.removeLike
-import com.coprotect.myapplication.recyclerViewAdapters.PostListener
 import com.coprotect.myapplication.recyclerViewAdapters.PostRVAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ChildEventListener
@@ -316,5 +318,6 @@ class HomeFragment : Fragment(), PostListener {
 
         startActivity(Intent.createChooser(shareIntent, "Share image via..."))
     }
+
 
 }
