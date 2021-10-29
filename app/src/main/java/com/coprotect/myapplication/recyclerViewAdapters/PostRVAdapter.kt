@@ -1,6 +1,8 @@
 package com.coprotect.myapplication.recyclerViewAdapters
 
+import android.animation.Animator
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +10,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.lottie.LottieAnimationView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.coprotect.myapplication.R
@@ -16,12 +19,14 @@ import com.coprotect.myapplication.constants.DatabaseLocations
 import com.coprotect.myapplication.constants.DatabaseLocations.Companion.getPostLikeReference
 import com.coprotect.myapplication.firebaseClasses.PostItem
 import com.coprotect.myapplication.firebaseClasses.UserItem
+import com.coprotect.myapplication.listeners.DoubleClickListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
+import java.util.logging.Handler
 
 class PostRVAdapter(private val context: Context, private val listener: PostListener): RecyclerView.Adapter<PostRVAdapter.PostViewHolder>() {
 
@@ -38,6 +43,7 @@ class PostRVAdapter(private val context: Context, private val listener: PostList
         val likeBtn : ImageButton = itemView.findViewById(R.id.postLikeBtn)
         val commentBtn : ImageButton = itemView.findViewById(R.id.postCommentBtn)
         val shareBtn : ImageButton = itemView.findViewById(R.id.postShareBtn)
+        val loveAnimation: LottieAnimationView = itemView.findViewById(R.id.loveAnimation)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
@@ -54,6 +60,34 @@ class PostRVAdapter(private val context: Context, private val listener: PostList
         viewHolder.name.setOnClickListener { listener.onClickedProfile(allPosts[viewHolder.bindingAdapterPosition]) }
 
         viewHolder.shareBtn.setOnClickListener { listener.onShareButtonClicked(allPosts[viewHolder.bindingAdapterPosition]) }
+
+        viewHolder.postImage.setOnClickListener(object : DoubleClickListener(){
+            override fun onDoubleClick(v: View) {
+                // Play animation
+                viewHolder.loveAnimation.playAnimation()
+                listener.onPostDoubleClicked(allPosts[viewHolder.bindingAdapterPosition])
+            }
+        })
+
+        viewHolder.loveAnimation.addAnimatorListener(object: Animator.AnimatorListener{
+            override fun onAnimationStart(p0: Animator?) {
+                viewHolder.loveAnimation.visibility = View.VISIBLE
+                viewHolder.loveAnimation.elevation = 10F
+            }
+
+            override fun onAnimationEnd(p0: Animator?) {
+                viewHolder.loveAnimation.elevation = -1F
+            }
+
+            override fun onAnimationCancel(p0: Animator?) {
+                Log.e("Animation:","cancel")
+            }
+
+            override fun onAnimationRepeat(p0: Animator?) {
+                Log.e("Animation:","cancel")
+            }
+
+        })
 
         return viewHolder
     }
@@ -119,6 +153,7 @@ class PostRVAdapter(private val context: Context, private val listener: PostList
                     if(snapshot.hasChild(FirebaseAuth.getInstance().uid.toString())){
                         try {
                             holder.likeBtn.setBackgroundResource(R.drawable.love_filled)
+
                         }catch (e: Exception){
                             e.stackTrace
                         }
@@ -159,4 +194,5 @@ interface PostListener{
     fun onCommentButtonClicked(currentPost: PostItem)
     fun onClickedProfile(currentPost: PostItem)
     fun onShareButtonClicked(currentPost: PostItem)
+    fun onPostDoubleClicked(currentPost: PostItem)
 }

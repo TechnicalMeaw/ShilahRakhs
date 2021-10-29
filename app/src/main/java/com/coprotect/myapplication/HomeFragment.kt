@@ -216,6 +216,31 @@ class HomeFragment : Fragment(), PostListener {
         }.start()
     }
 
+    override fun onPostDoubleClicked(currentPost: PostItem) {
+        Log.d("HomeFragment", "Double Clicked on Post")
+        val ref = getPostLikeReference(currentPost.postId)
+        Thread{
+            ref.addListenerForSingleValueEvent(object : ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()){
+                        if (!snapshot.hasChild(FirebaseAuth.getInstance().uid.toString())){
+                            ref.child(FirebaseAuth.getInstance().uid.toString()).setValue(System.currentTimeMillis())
+                            addLike(currentPost.postId)
+                        }
+                    }else{
+                        ref.child(FirebaseAuth.getInstance().uid.toString()).setValue(System.currentTimeMillis())
+                        addLike(currentPost.postId)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+
+            })
+        }.start()
+    }
+
     override fun onCommentButtonClicked(currentPost: PostItem) {
         val commentFragment = CommentsFragment()
         val args = Bundle()
@@ -261,6 +286,7 @@ class HomeFragment : Fragment(), PostListener {
             })
 
     }
+
 
     fun shareImage(bitmap: Bitmap){
                 // save bitmap to cache directory

@@ -65,11 +65,12 @@
             android:layout_height="wrap_content">
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/cardView3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="2dp"
                 android:layout_marginTop="5dp"
 
+                app:cardCornerRadius="2dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -89,6 +90,19 @@
                     tools:srcCompat="@tools:sample/avatars" />
 
             </androidx.cardview.widget.CardView>
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/loveAnimation"
+                android:layout_width="250dp"
+                android:layout_height="250dp"
+                app:lottie_rawRes="@raw/love_animation"
+                android:elevation="10dp"
+                android:duplicateParentState="true"
+                app:layout_constraintBottom_toBottomOf="@+id/cardView3"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/cardView3"
+                />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
