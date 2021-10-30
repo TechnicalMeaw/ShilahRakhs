@@ -68,6 +68,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/followersLabelTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Followers"
@@ -91,6 +92,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/followingLabelTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Following"

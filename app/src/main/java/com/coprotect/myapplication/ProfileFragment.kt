@@ -95,34 +95,48 @@ class ProfileFragment : Fragment(), ActivityPostListener {
          * Followers and Following Users Count Clicked
          */
         binding.followingCountTextView.setOnClickListener {
-            val followListFragment = FollowListFragment()
-            val args = Bundle()
-            args.putString(IntentStrings.userId, profileUserId)
-            args.putString(IntentStrings.followType, "following")
-            followListFragment.arguments = args
-
-            parentFragmentManager.beginTransaction()
-                .setReorderingAllowed(true)
-                .addToBackStack("showFollowing")
-                .replace(R.id.fragmentContainerView, followListFragment)
-                .commit()
+            showFollowing()
+        }
+        binding.followingLabelTextView.setOnClickListener {
+            showFollowing()
         }
 
         binding.followersCountTextView.setOnClickListener {
-            val followListFragment = FollowListFragment()
-            val args = Bundle()
-            args.putString(IntentStrings.userId, profileUserId)
-            args.putString(IntentStrings.followType, "followers")
-            followListFragment.arguments = args
-
-            parentFragmentManager.beginTransaction()
-                .setReorderingAllowed(true)
-                .addToBackStack("showFollowers")
-                .replace(R.id.fragmentContainerView, followListFragment)
-                .commit()
+            showFollowers()
+        }
+        binding.followersLabelTextView.setOnClickListener {
+            showFollowers()
         }
 
         return rootView
+    }
+
+    private fun showFollowing(){
+        val followListFragment = FollowListFragment()
+        val args = Bundle()
+        args.putString(IntentStrings.userId, profileUserId)
+        args.putString(IntentStrings.followType, "following")
+        followListFragment.arguments = args
+
+        parentFragmentManager.beginTransaction()
+            .setReorderingAllowed(true)
+            .addToBackStack("showFollowing")
+            .replace(R.id.fragmentContainerView, followListFragment)
+            .commit()
+    }
+
+    private fun showFollowers(){
+        val followListFragment = FollowListFragment()
+        val args = Bundle()
+        args.putString(IntentStrings.userId, profileUserId)
+        args.putString(IntentStrings.followType, "followers")
+        followListFragment.arguments = args
+
+        parentFragmentManager.beginTransaction()
+            .setReorderingAllowed(true)
+            .addToBackStack("showFollowers")
+            .replace(R.id.fragmentContainerView, followListFragment)
+            .commit()
     }
 
 
