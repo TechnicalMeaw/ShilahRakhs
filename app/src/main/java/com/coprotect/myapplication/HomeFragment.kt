@@ -177,7 +177,13 @@ class HomeFragment : Fragment(), PostListener {
         getFollowingReference(FirebaseAuth.getInstance().uid.toString()).child(post.userId).addListenerForSingleValueEvent(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()){
+                    // Hide Declaration
+                    if (binding.declaration.visibility == View.VISIBLE){
+                        binding.declaration.visibility = View.GONE
+                    }
+                    // Add post to show
                     postMap[postKey] = post
+                    //Update Adapter
                     adapter.updatePosts(postMap.values.sortedBy { it.postTimeInMillis }.reversed().toList())
                 }
             }

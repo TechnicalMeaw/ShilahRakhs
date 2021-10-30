@@ -21,4 +21,11 @@
         android:tintMode="@color/white"
         android:src="@drawable/ic_baseline_add_24" />
 
+    <TextView
+        android:id="@+id/declaration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="Follow peoples to see their posts"/>
+
 </RelativeLayout>

@@ -47,6 +47,7 @@ class EditProfileFragment : Fragment() {
 
         binding.closeBtn.setOnClickListener { parentFragmentManager.popBackStack() }
 
+
         binding.changePhotoText.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK)
             intent.type = "image/*"
