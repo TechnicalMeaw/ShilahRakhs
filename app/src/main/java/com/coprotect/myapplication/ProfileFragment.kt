@@ -13,8 +13,8 @@ import com.coprotect.myapplication.constants.DatabaseLocations.Companion.getFoll
 import com.coprotect.myapplication.constants.DatabaseLocations.Companion.getUserPostReference
 import com.coprotect.myapplication.constants.IntentStrings
 import com.coprotect.myapplication.databinding.FragmentProfileBinding
+import com.coprotect.myapplication.firebaseClasses.PostItem
 import com.coprotect.myapplication.firebaseClasses.UserItem
-import com.coprotect.myapplication.firebaseClasses.UserPostItem
 import com.coprotect.myapplication.followOperations.FollowTasks.Companion.addFollowing
 import com.coprotect.myapplication.recyclerViewAdapters.ActivityPostListener
 import com.coprotect.myapplication.recyclerViewAdapters.ActivityPostRVAdapter
@@ -57,8 +57,8 @@ class ProfileFragment : Fragment(), ActivityPostListener {
          * Initialize the recyclerView
          * With adapter
          */
-        binding.activityRecyclerView.layoutManager = GridLayoutManager(rootView.context, 3)
         adapter = ActivityPostRVAdapter(this.requireContext(), this)
+        binding.activityRecyclerView.layoutManager = GridLayoutManager(rootView.context, 3)
         binding.activityRecyclerView.adapter = this.adapter
 
         /**
@@ -126,7 +126,7 @@ class ProfileFragment : Fragment(), ActivityPostListener {
     }
 
 
-    private val activityPostMap = HashMap<String, UserPostItem>()
+    private val activityPostMap = HashMap<String, PostItem>()
 
     private fun fetchUserDetails(userId: String){
         // Image Loading Config
@@ -172,27 +172,27 @@ class ProfileFragment : Fragment(), ActivityPostListener {
         getUserPostReference(userId).addChildEventListener(object: ChildEventListener{
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 if (snapshot.exists()){
-                    val activityPost = snapshot.getValue(UserPostItem::class.java)
+                    val activityPost = snapshot.getValue(PostItem::class.java)
                     if (activityPost != null){
-                        activityPostMap[snapshot.key.toString()] = activityPost
-                        adapter.updateActivityPosts(activityPostMap.values.sortedBy { it.modifiedInMillis }.toList())
+                        updateActivity(snapshot.key.toString(), activityPost)
                     }
                 }
             }
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
                 if (snapshot.exists()){
-                    val activityPost = snapshot.getValue(UserPostItem::class.java)
+                    val activityPost = snapshot.getValue(PostItem::class.java)
                     if (activityPost != null){
-                        activityPostMap[snapshot.key.toString()] = activityPost
-                        adapter.updateActivityPosts(activityPostMap.values.sortedBy { it.modifiedInMillis }.toList())
+                        updateActivity(snapshot.key.toString(), activityPost)
                     }
                 }
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
-                activityPostMap.remove(snapshot.key.toString())
-                adapter.updateActivityPosts(activityPostMap.values.sortedBy { it.modifiedInMillis }.toList())
+                if (activityPostMap.containsKey(snapshot.key)){
+                    activityPostMap.remove(snapshot.key.toString())
+                    adapter.updateActivityPosts(activityPostMap.values.sortedBy { it.postTimeInMillis }.reversed().toList())
+                }
             }
 
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
@@ -204,6 +204,11 @@ class ProfileFragment : Fragment(), ActivityPostListener {
             }
 
         })
+    }
+
+    private fun updateActivity(key: String, post: PostItem){
+        activityPostMap[key] = post
+        adapter.updateActivityPosts(activityPostMap.values.sortedBy { it.postTimeInMillis }.reversed().toList())
     }
 
     private fun checkFollowing(myUserId: String, profileUserId: String) {
@@ -229,7 +234,7 @@ class ProfileFragment : Fragment(), ActivityPostListener {
 
 
 
-    override fun onClickedActivityPost(activityPost: UserPostItem, position: Int) {
+    override fun onClickedActivityPost(activityPost: PostItem, position: Int) {
         //Put the value
         val homeFragment = HomeFragment()
         val args = Bundle()

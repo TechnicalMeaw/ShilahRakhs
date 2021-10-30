@@ -8,12 +8,12 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.coprotect.myapplication.R
-import com.coprotect.myapplication.firebaseClasses.UserPostItem
+import com.coprotect.myapplication.firebaseClasses.PostItem
 
 class ActivityPostRVAdapter( private val context: Context, val listener: ActivityPostListener) :
     RecyclerView.Adapter<ActivityPostRVAdapter.ActivityViewHolder>() {
 
-    private val allActivityPost = ArrayList<UserPostItem>()
+    private val allActivityPost = ArrayList<PostItem>()
 
     inner class ActivityViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val activityImageView: ImageView = itemView.findViewById(R.id.activityImageView)
@@ -38,7 +38,7 @@ class ActivityPostRVAdapter( private val context: Context, val listener: Activit
         return allActivityPost.size
     }
 
-    fun updateActivityPosts(postList: List<UserPostItem>){
+    fun updateActivityPosts(postList: List<PostItem>){
         allActivityPost.clear()
         allActivityPost.addAll(postList)
         notifyDataSetChanged()
@@ -47,5 +47,5 @@ class ActivityPostRVAdapter( private val context: Context, val listener: Activit
 }
 
 interface ActivityPostListener{
-    fun onClickedActivityPost(activityPost: UserPostItem, position: Int)
+    fun onClickedActivityPost(activityPost: PostItem, position: Int)
 }
